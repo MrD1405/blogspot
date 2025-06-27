@@ -2,7 +2,7 @@ POST http://localhost:7777/signup
 Content-Type: application/json
 
 {
-    "email": "mdkumar1405@gmail.com",
+    "email": "mdkumar145@gmail.com",
     "fullName":"Dushyant",
-    "password": "asdf123"
+    "password": "Asdf123"
 }
