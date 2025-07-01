@@ -67,7 +67,7 @@ server.post("/signup",(req,res)=>{
         })
         .catch((err)=>{
             if(err.code===11000){
-                return res.status(500).json({error:"User with this email already exists"});
+                return res.status(403).json({error:"User with this email already exists"});
             }
             return res.status(500).json({error:"error while saving user -> "+err.message})
         })
@@ -89,7 +89,7 @@ server.post("/signin",(req,res)=>{
         if(!user){
             return res.status(404).json({error:"User not found"});
         }
-        bcrypt.compare(password,user.personal_info.email,(err,result)=>{
+        bcrypt.compare(password,user.personal_info.password,(err,result)=>{
             if(err){
                 return res.status(500).json({Error:"error while comparing password -> "+err.message});
             }
