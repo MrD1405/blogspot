@@ -6,6 +6,7 @@ import cors from 'cors';
 import User from './Schema/User.js'
 import { nanoid } from 'nanoid';
 import jwt from 'jsonwebtoken';
+import aws from 'aws-sdk';
 
 let PORT=7777;
 
@@ -18,6 +19,26 @@ mongoose.connect(process.env.DB_LOCATION,{
     autoIndex:true,
 })
 
+//setting up s3 bucket
+const s3=new aws.S3({
+    region:'eu-north-1',
+    accessKeyId:process.env.AWS_ACCESS_KEY,
+    secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY,
+})
+
+
+const generateUploadURL=async ()=>{
+    const date=new Date();
+    const imageName=`${nanoid()}-${date.getTime()}.jpeg`;
+    
+    await s3.getSignedUrlPromise('putObject',{
+        Bucket:'blogging-website-medium-clone',
+        Key:imageName,
+        Expires:1000,
+        ContentType:"image/jpeg"
+    });
+
+}
 
 const formatDataToSendUser=(user)=>{
     const accessToken=jwt.sign({id:user._id},process.env.SECRET_ACCESS_KEY);
@@ -104,6 +125,10 @@ server.post("/signin",(req,res)=>{
         return res.status(500).json({error:"Error while finding user -> "+err.message});
     })  
 })
+
+
+
+
 
 server.listen(PORT,()=>{
     console.log("Server is running on Port "+PORT);
